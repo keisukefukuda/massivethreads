@@ -5,6 +5,7 @@
 #ifndef MYTH_INTERNAL_LOCK_H_
 #define MYTH_INTERNAL_LOCK_H_
 
+#include <pthread.h>
 #include "myth/myth_config.h"
 
 #ifdef MYTH_INTERNAL_LOCK_MUTEX
