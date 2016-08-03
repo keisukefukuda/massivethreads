@@ -11,17 +11,34 @@ if test "x$ac_test_CFLAGS" = "xset"; then
   CFLAGS=$ac_save_CFLAGS
 elif test "x$ac_cv_prog_cc_g" = "xyes"; then
   if test "x$GCC" = "xyes"; then
-    CFLAGS="-g -O3 -Wall -ftls-model=initial-exec"
+    CFLAGS="-g -O3 -Wall"
   else
     CFLAGS="-g"
   fi
 else
   if test "x$GCC" = "xyes"; then
-    CFLAGS="-O3 -Wall -ftls-model=initial-exec"
+    CFLAGS="-O3 -Wall"
   else
     CFLAGS=
   fi
 fi
+
+# Check if the compiler accepts -ftls-mode=initial-exec
+save_cflags="$CFLAGS"
+CFLAGS=-ftls-model=initial-exec
+AC_MSG_CHECKING([whether $CC supports -ftls-model=initial-exec])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([])],
+	[
+		AC_MSG_RESULT([yes])
+		CFLAGS="$save_cflags -ftls-model=initial-exec"
+	],
+	[
+		AC_MSG_RESULT([no])
+		CFLAGS="$save_cflags"
+	]
+)
+# AX_CHECK_COMPILE_FLAG([-ftls-model=initial-exec], [CFLAGS="$CFLAGS -ftls-model=initial-exec"], [], [])
+
 AC_PROG_CC_C_O
 AM_PROG_CC_C_O
 AM_PROG_AS
@@ -35,7 +52,7 @@ AC_PROG_AWK
 # error: possibly undefined macro: AM_PROG_AR
 # If this token and others are legitimate, please use m4_pattern_allow.
 # See the Autoconf documentation.
-AM_PROG_AR
+m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 
 # Essential libraries
 AC_CHECK_LIB(dl, dlopen, [], [AC_MSG_ERROR(Test for dlopen failed.)])
@@ -62,12 +79,12 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#define _ISOC11_SOURCE 1
 		  [AC_MSG_RESULT([no]);  AC_DEFINE([HAVE_DECL_ALIGNED_ALLOC], [0], [if set, aligned_alloc is declared in stdlib.h])])
 
 
-dnl AC_CHECK_DECL([aligned_alloc])
-dnl if test "x$ac_cv_have_decl_aligned_alloc" = xyes; then
-dnl    AC_DEFINE([HAVE_DECL_ALIGNED_ALLOC], [1], [If set, aligned_alloc is declared]) 
-dnl else
-dnl    AC_DEFINE([HAVE_DECL_ALIGNED_ALLOC], [0], [If set, aligned_alloc is declared]) 
-dnl fi
+AC_CHECK_DECL([aligned_alloc])
+if test "x$ac_cv_have_decl_aligned_alloc" = xyes; then
+   AC_DEFINE([HAVE_DECL_ALIGNED_ALLOC], [1], [If set, aligned_alloc is declared]) 
+else
+   AC_DEFINE([HAVE_DECL_ALIGNED_ALLOC], [0], [If set, aligned_alloc is declared]) 
+fi
 
 #
 # --enable-malloc-wrapper

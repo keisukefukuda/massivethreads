@@ -8,7 +8,11 @@
 
 typedef unsigned long long ts_t;
 
-#define USE_RDTSC 1
+#ifdef __i386
+# define USE_RDTSC 1
+#else
+# define USE_RDTSC 0
+#endif
 
 #if USE_RDTSC
 static inline ts_t rdtsc() {
